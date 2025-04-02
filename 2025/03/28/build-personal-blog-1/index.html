@@ -1,0 +1,201 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>搭建个人博客（一）—— 搭建基础框架和部署 | Theway's Blog</title><meta name="author" content="Timmy Sun"><meta name="copyright" content="Timmy Sun"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前言 本教程部分参考自 Hexo博客搭建基础教程(一)。  本教程记录的博客环境搭建于 WSL（Windows Subsystem for Linux，适用于 Linux 的 Windows 子系统）上，基于 Nodejs 和 Hexo。博客最终部署到 Github 的免费托管页面。 安装 Nodejs 打开 Nodejs 历史版本下载页面（https:&#x2F;&#x2F;nodejs.org&#x2F;en&#x2F;about&#x2F;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="搭建个人博客（一）—— 搭建基础框架和部署">
+<meta property="og:url" content="http://example.com/2025/03/28/build-personal-blog-1/index.html">
+<meta property="og:site_name" content="Theway&#39;s Blog">
+<meta property="og:description" content="前言 本教程部分参考自 Hexo博客搭建基础教程(一)。  本教程记录的博客环境搭建于 WSL（Windows Subsystem for Linux，适用于 Linux 的 Windows 子系统）上，基于 Nodejs 和 Hexo。博客最终部署到 Github 的免费托管页面。 安装 Nodejs 打开 Nodejs 历史版本下载页面（https:&#x2F;&#x2F;nodejs.org&#x2F;en&#x2F;about&#x2F;">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/kingbob-icon.jpg">
+<meta property="article:published_time" content="2025-03-28T13:41:50.000Z">
+<meta property="article:modified_time" content="2025-04-02T11:22:35.552Z">
+<meta property="article:author" content="Timmy Sun">
+<meta property="article:tag" content="Hexo">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/kingbob-icon.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "搭建个人博客（一）—— 搭建基础框架和部署",
+  "url": "http://example.com/2025/03/28/build-personal-blog-1/",
+  "image": "http://example.com/img/kingbob-icon.jpg",
+  "datePublished": "2025-03-28T13:41:50.000Z",
+  "dateModified": "2025-04-02T11:22:35.552Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Timmy Sun",
+      "url": "http://example.com/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.svg"><link rel="canonical" href="http://example.com/2025/03/28/build-personal-blog-1/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '搭建个人博客（一）—— 搭建基础框架和部署',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/background.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/kingbob-icon.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">1</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">1</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Theway's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">搭建个人博客（一）—— 搭建基础框架和部署</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">搭建个人博客（一）—— 搭建基础框架和部署</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-03-28T13:41:50.000Z" title="Created 2025-03-28 21:41:50">2025-03-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-04-02T11:22:35.552Z" title="Updated 2025-04-02 19:22:35">2025-04-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E4%BD%BF%E7%94%A8-Hexo-%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">使用 Hexo 搭建个人博客</a></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>本教程部分参考自 <a target="_blank" rel="noopener" href="https://netlify.fomal.cc/posts/e593433d">Hexo博客搭建基础教程(一)</a>。</p>
+</blockquote>
+<p>本教程记录的博客环境搭建于 WSL（Windows Subsystem for Linux，适用于 Linux 的 Windows 子系统）上，基于 Nodejs 和 Hexo。博客最终部署到 Github 的免费托管页面。</p>
+<h2 id="安装-Nodejs"><a href="#安装-Nodejs" class="headerlink" title="安装 Nodejs"></a>安装 Nodejs</h2><ol>
+<li><p>打开 Nodejs 历史版本下载页面（<a target="_blank" rel="noopener" href="https://nodejs.org/en/about/previous-releases">https://nodejs.org/en/about/previous-releases</a>），下载 v22.14.0 版本的 Nodejs，选择 x64 的 Linux 系统软件包。</p>
+</li>
+<li><p>将 Nodejs 解压后移动到 <code>/usr/local/nodejs</code> 路径下：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar -xvf node-v22.14.0-linux-x64.tar.gz</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">mv</span> node-v22.14.0-linux-x64 /usr/local/nodejs</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将 Nodejs 的二进制可执行文件软链接到 <code>/usr/local/bin</code> 路径下：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> <span class="built_in">ln</span> -s /usr/local/nodejs/bin/node /usr/local/bin/node</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">ln</span> -s /usr/local/nodejs/bin/npm /usr/local/bin/npm</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">ln</span> -s /usr/local/nodejs/bin/npx /usr/local/bin/npx</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="安装-Hexo-工具"><a href="#安装-Hexo-工具" class="headerlink" title="安装 Hexo 工具"></a>安装 Hexo 工具</h2><ul>
+<li><p>使用 npm 安装 Hexo 工具： </p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> npm install hexo-cli</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="创建-Hexo-项目"><a href="#创建-Hexo-项目" class="headerlink" title="创建 Hexo 项目"></a>创建 Hexo 项目</h2><ol>
+<li><p>创建一个路径，作为 Hexo 项目的路径，在这个路径初始化 Hexo 项目：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> blog &amp;&amp; <span class="built_in">cd</span> blog</span><br><span class="line">npx hexo init</span><br><span class="line">npm install</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将博客静态页面部署到本地：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx hexo service</span><br></pre></td></tr></table></figure>
+
+<p> 此时打开浏览器，在 <a target="_blank" rel="noopener" href="http://localhost:4000/">http://localhost:4000/</a> 地址可以看到博客页面。</p>
+</li>
+</ol>
+<h2 id="将博客部署到-Github-托管页面"><a href="#将博客部署到-Github-托管页面" class="headerlink" title="将博客部署到 Github 托管页面"></a>将博客部署到 Github 托管页面</h2><ol>
+<li><p>在 Github 创建仓库，仓库命名为 <code>&lt;用户名&gt;.github.io</code>。</p>
+</li>
+<li><p>安装 <code>hexo-deployer-git</code>：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改 Hexo 配置文件。Hexo 项目路径下有一个 <code>_config.yml</code> 文件，修改最后一行的配置，将 repository 修改为你自己的 github 仓库的地址：</p>
+ <figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repository:</span> <span class="string">git@github.com:mocha-macchiato/mocha-macchiato.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">main</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>执行命令将 Hexo 静态页面部署到 Github：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx hexo clean &amp;&amp; npx hexo g &amp;&amp; npx hexo d</span><br></pre></td></tr></table></figure></li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Timmy Sun</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/03/28/build-personal-blog-1/">http://example.com/2025/03/28/build-personal-blog-1/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Hexo/">Hexo</a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/kingbob-icon.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Timmy Sun</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">1</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">1</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/mocha-macchiato"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">我认为粘土在技艺精湛的制陶工人手中肯定会感到快乐。 ——珍妮特·菲奇</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-Nodejs"><span class="toc-number">2.</span> <span class="toc-text">安装 Nodejs</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-Hexo-%E5%B7%A5%E5%85%B7"><span class="toc-number">3.</span> <span class="toc-text">安装 Hexo 工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA-Hexo-%E9%A1%B9%E7%9B%AE"><span class="toc-number">4.</span> <span class="toc-text">创建 Hexo 项目</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%86%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0-Github-%E6%89%98%E7%AE%A1%E9%A1%B5%E9%9D%A2"><span class="toc-number">5.</span> <span class="toc-text">将博客部署到 Github 托管页面</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/30/build-personal-blog-4/" title="搭建个人博客（四）—— 高级修改配置">搭建个人博客（四）—— 高级修改配置</a><time datetime="2025-03-30T12:02:04.000Z" title="Created 2025-03-30 20:02:04">2025-03-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/30/build-personal-blog-3/" title="搭建个人博客（三）—— 修改配置">搭建个人博客（三）—— 修改配置</a><time datetime="2025-03-30T09:42:19.000Z" title="Created 2025-03-30 17:42:19">2025-03-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/30/build-personal-blog-2/" title="搭建个人博客（二）—— 应用主题和创建页面">搭建个人博客（二）—— 应用主题和创建页面</a><time datetime="2025-03-30T08:25:59.000Z" title="Created 2025-03-30 16:25:59">2025-03-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/28/build-personal-blog-1/" title="搭建个人博客（一）—— 搭建基础框架和部署">搭建个人博客（一）—— 搭建基础框架和部署</a><time datetime="2025-03-28T13:41:50.000Z" title="Created 2025-03-28 21:41:50">2025-03-28</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2025 By Timmy Sun</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div></div></body></html>
